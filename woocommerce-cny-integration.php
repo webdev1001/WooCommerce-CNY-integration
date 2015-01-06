@@ -32,23 +32,20 @@ add_filter('woocommerce_paypal_args', 'WCNY_paypal_convert_to_currency');
  * @param array paypalArgs
  * @return array paypalArgs
  */
-function WCNY_paypal_convert_to_currency($paypalArgs){
-
-    if ($paypalArgs['currency_code'] == 'CNY'){
-
-        $count = 1;
-
-        while (isset($paypalArgs['amount_' . $count])) {
-
-            $paypalArgs['amount_' . $count] = WCNY_convert_price($paypalArgs['amount_' . $count]);
-            $count++;
-
+function convert_rmb_to_usd($paypal_args){
+ 
+    if ($paypal_args['currency_code'] == 'CNY'){
+        foreach ($paypal_args as $key => $paypal_arg) {
+        	if (false !== strpos($key, 'amount')) {
+        		$paypal_args[$key] = WCNY_convert_price($paypal_args[$key]);
+        	}
         }
     }
+    $paypal_args['currency_code'] = 'USD';
 
-    return $paypalArgs;
-
+    return $paypal_args;
 }
+add_filter('woocommerce_paypal_args', 'convert_rmb_to_usd');
 
 add_filter('woocommerce_cart_total', 'WCNY_show_currency_on_cart');
 /**
